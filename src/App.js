@@ -4,6 +4,9 @@ import Header from "./components/Header";
 import RecipeExcerpt from "./components/RecipeExerpt";
 import RecipeFull from "./components/RecipeFull";
 import NewRecipeForm from "./components/NewRecipeForm";
+import { ToastContainer } from "react-toastify";
+import displayToast from "./helpers/toastHelper";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 function App() {
@@ -56,7 +59,7 @@ function App() {
 
         setRecipes([...recipes, data.recipe]);
 
-        console.log("Recipe added successfully!");
+        displayToast("Recipe added successfully!", "success");
 
         setShowNewRecipeForm(false);
         setNewRecipe({
@@ -69,10 +72,10 @@ function App() {
             "https://images.pexels.com/photos/9986228/pexels-photo-9986228.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
         });
       } else {
-        console.error("Oops - could not add recipe!");
+        displayToast("Oops, could not add recipe!", "error");
       }
     } catch (e) {
-      console.error("An error occurred during the request:", e);
+      displayToast("An error occurred during the request:", "error", e);
     }
   };
 
@@ -215,6 +218,7 @@ function App() {
           ))}
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 }
