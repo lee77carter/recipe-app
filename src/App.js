@@ -10,6 +10,7 @@ function App() {
   const [recipes, setRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [showNewRecipeForm, setShowNewRecipeForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [newRecipe, setNewRecipe] = useState({
     title: "",
@@ -32,6 +33,7 @@ function App() {
         }
       } catch (e) {
         console.error("An error occurred during the request:", e);
+        console.log("An unexpected error occurre  d. Please try again later.");
       }
     };
     fetchAllRecipes();
@@ -101,9 +103,11 @@ function App() {
         );
         console.log("Recipe updated!");
       } else {
+        console.error("Recipe update failed.");
         console.error("Failed to update recipe. Please try again.");
       }
     } catch (error) {
+      console.error("An error occurred during the request:", error);
       console.error("An unexpected error occurred. Please try again later.");
     }
 
@@ -129,6 +133,15 @@ function App() {
     }
   };
 
+  const handleSearch = () => {
+    const searchResults = recipes.filter((recipe) => {
+      const valuesToSearch = [recipe.title, recipe.ingredients, recipe.description];
+      return valuesToSearch.some((value) => value.toLowerCase().includes(searchTerm.toLowerCase()));
+    });
+
+    return searchResults;
+  };
+
   const handleSelectRecipe = (recipe) => {
     setSelectedRecipe(recipe);
   };
@@ -146,6 +159,10 @@ function App() {
     setSelectedRecipe(null);
   };
 
+  const updateSearchTerm = (text) => {
+    setSearchTerm(text);
+  };
+
   const onUpdateForm = (e, action = "new") => {
     const { name, value } = e.target;
     if (action === "update") {
@@ -158,10 +175,11 @@ function App() {
     }
   };
 
+  const displayedRecipes = searchTerm ? handleSearch() : recipes;
+
   return (
     <div className='recipe-app'>
-      <Header showRecipeForm={showRecipeForm} />
-
+      <Header showRecipeForm={showRecipeForm} updateSearchTerm={updateSearchTerm} searchTerm={searchTerm} />
       {showNewRecipeForm && (
         <NewRecipeForm
           newRecipe={newRecipe}
@@ -170,7 +188,6 @@ function App() {
           onUpdateForm={onUpdateForm}
         />
       )}
-
       {selectedRecipe && (
         <RecipeFull
           selectedRecipe={selectedRecipe}
@@ -180,10 +197,9 @@ function App() {
           handleDeleteRecipe={handleDeleteRecipe}
         />
       )}
-
       {!selectedRecipe && !showNewRecipeForm && (
         <div className='recipe-list'>
-          {recipes.map((recipe) => (
+          {displayedRecipes.map((recipe) => (
             <RecipeExcerpt key={recipe.id} recipe={recipe} handleSelectRecipe={handleSelectRecipe} />
           ))}
         </div>
