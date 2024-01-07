@@ -1,3 +1,4 @@
+import time
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
@@ -10,22 +11,19 @@ class Recipe(db.Model):
     title = db.Column(db.String(100), nullable=False)
     ingredients = db.Column(db.String(500), nullable=False)
     instructions = db.Column(db.Text, nullable=False)
-    description = db.Column(db.Text, nullable=True,
-                            default='Delicious. You need to try it!')
-    image_url = db.Column(db.String(500), nullable=True,
-                          default="https://images.pexels.com/photos/9986228/pexels-photo-9986228.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")
+    description = db.Column(db.Text, nullable=True, default='Delicious. You need to try it!')
+    image_url = db.Column(db.String(500), nullable=True, default="https://images.pexels.com/photos/9986228/pexels-photo-9986228.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")
     servings = db.Column(db.Integer, nullable=False)
-
+    
     def __repr__(self):
         return f"Recipe(id={self.id}, title='{self.title}', description='{self.description}', servings={self.servings})"
-
+    
+# Creates initial database ./instance/recipe.db    
 # with app.app_context():
-#     db.create_all()
-#     db.session.commit()
+#   db.create_all()
+#   db.session.commit()
 
-# Route to fetch all recipes
-
-
+# GET Route  
 @app.route('/api/recipes', methods=['GET'])
 def get_all_recipes():
     recipes = Recipe.query.all()
@@ -42,33 +40,29 @@ def get_all_recipes():
         })
     return jsonify(recipe_list)
 
-# Route to add a new recipe
-
-
+# POST Route
 @app.route('/api/recipes', methods=['POST'])
 def add_recipe():
     data = request.get_json()
-    # Validate the incoming JSON data for required fields
-    required_fields = ['title', 'ingredients',
-                       'instructions', 'servings', 'description', 'image_url']
-
+    new_recipe = Recipe(
+            title=data['title'],
+            ingredients=data['ingredients'],
+            instructions=data['instructions'],
+            servings=data['servings'],
+            description=data['description'],
+            image_url=data['image_url']
+        )
+    # ensure client fields have been populated
+    required_fields = ['title', 'ingredients', 'instructions', 'servings', 'description', 'image_url']
+    
     for field in required_fields:
         if field not in data or data[field] == "":
             return jsonify({'error': f"Missing required field: '{field}'"}), 400
-
-    new_recipe = Recipe(
-        title=data['title'],
-        ingredients=data['ingredients'],
-        instructions=data['instructions'],
-        servings=data['servings'],
-        description=data['description'],
-        image_url=data['image_url']
-    )
-
+        
     db.session.add(new_recipe)
     db.session.commit()
-
-    # Serialize the new recipe and return it as JSON
+    
+    # serialization, transforming recipe back into JSON 
     new_recipe_data = {
         'id': new_recipe.id,
         'title': new_recipe.title,
@@ -78,37 +72,35 @@ def add_recipe():
         'description': new_recipe.description,
         'image_url': new_recipe.image_url
     }
-
+    
     return jsonify({'message': 'Recipe added successfully', 'recipe': new_recipe_data})
 
-# Route to update a recipe
-
-
-@app.route('/api/recipes/<int:recipe_id>', methods=['PUT'])
+# PUT Route
+@app.route('/api/recipes<int:recipe_id>', methods=['PUT'])
 def update_recipe(recipe_id):
     recipe = Recipe.query.get(recipe_id)
+    # validate if recipe exist
     if not recipe:
         return jsonify({'error': 'Recipe not found'}), 404
-
+    
     data = request.get_json()
-
-    # Validate the incoming JSON data for required fields
-    required_fields = ['title', 'ingredients',
-                       'instructions', 'servings', 'description', 'image_url']
-
+    
+   # Validate the incoming JSON data for required fields
+    required_fields = ['title', 'ingredients','instructions', 'servings', 'description', 'image_url']
+    
     for field in required_fields:
         if field not in data or data[field] == "":
             return jsonify({'error': f"Missing required field: '{field}'"}), 400
-
+    
     recipe.title = data['title']
     recipe.ingredients = data['ingredients']
     recipe.instructions = data['instructions']
     recipe.servings = data['servings']
     recipe.description = data['description']
     recipe.image_url = data['image_url']
-
+    
     db.session.commit()
- # Serialize the updated recipe and return it as JSON
+    # serialization, transforming recipe back into JSON 
     updated_recipe = {
         'id': recipe.id,
         'title': recipe.title,
@@ -118,22 +110,20 @@ def update_recipe(recipe_id):
         'description': recipe.description,
         'image_url': recipe.image_url
     }
-
+    
     return jsonify({'message': 'Recipe updated successfully', 'recipe': updated_recipe})
 
-# Route to delete a recipe
-
-
+# DELETE Route
 @app.route('/api/recipes/<int:recipe_id>', methods=['DELETE'])
 def delete_recipe(recipe_id):
     recipe = Recipe.query.get(recipe_id)
     if not recipe:
         return jsonify({'error': 'Recipe not found'}), 404
-
+    
     db.session.delete(recipe)
     db.session.commit()
     return jsonify({'message': 'Recipe deleted successfully'})
-
+ 
 
 if __name__ == '__main__':
     app.run(debug=True)
