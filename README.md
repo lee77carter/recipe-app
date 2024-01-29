@@ -73,7 +73,7 @@ Use `ctrl + C` to stop the server.
 ### Quick Setup: Existing Clone
 - Flask
     - `cd /api`
-    - `source venv/bin/activates`
+    - `source venv/bin/activate`
 - React
     - in root directory `/recipe-app`
     - `npm run start`
