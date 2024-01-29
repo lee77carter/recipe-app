@@ -63,14 +63,16 @@ Use `ctrl + C` to stop the server.
 
 ---
 
-### Quick Setup: New Repo
+### Quick Setup: New Clone
 - Flask
     - `cd /api`
     - `python -m venv venv && source venv/bin/activate`
     - `pip install -r requirements.txt`
     - `cd ../recipe-app`
     - `npm run start-api`
-
+### Quick Setup: Existing Clone
+- Flask
+    - `source venv/bin/activates`
 - React
     - in root directory `/recipe-app`
     - `npm run start`
