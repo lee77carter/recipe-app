@@ -1,3 +1,4 @@
+''' Recipe app built with a Flask backend (api/api.py), and the frontend using React (src/*.js). Written in both Python & JavaScript.'''
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 

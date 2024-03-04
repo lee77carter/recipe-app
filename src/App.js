@@ -1,3 +1,4 @@
+// Recipe app built with a Flask backend (api/api.py), and the frontend using React (src/*.js). Written in both Python & JavaScript.
 import React from "react";
 import { useState, useEffect } from "react";
 import Header from "./components/Header";
