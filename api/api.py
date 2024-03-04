@@ -1,4 +1,6 @@
-''' Recipe app built with a Flask backend (api/api.py), and the frontend using React (src/*.js). Written in both Python & JavaScript.'''
+'''An app written in both Python & JavaScript. This recipe app is built with a backend Flask web application (api/api.py - Python web framework), and the frontend using React (src/App.js), which consumes and interacts with the API created. 
+The recipes are loaded and saved to a database, with SHOW, CREATE, UPDATE, and DELETE capabilities.'''
+
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
